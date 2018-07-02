@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@prolaera/react-data-export-width": "^0.4.2",
     "react": "^16.4.1",
-    "react-data-export": "^0.4.2",
     "react-dom": "^16.4.1",
     "react-scripts": "1.1.4"
   },

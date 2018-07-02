@@ -1,5 +1,5 @@
+import ReactExport from '@prolaera/react-data-export-width';
 import React from 'react';
-import ReactExport from 'react-data-export';
 import certificates from '../json/certificates.json';
 import profile from '../json/profile.json';
 import regulators from '../json/regulators.json';
@@ -27,6 +27,7 @@ const cycleTotal = reportingPeriod;
 //Table Body
 
 const cols = ['DATE', 'TITLE', 'SPONSOR', 'DELIVERY METHOD', 'GENERAL'];
+
 const dynamicColumns = [];
 const keys = Object.keys(regulators[0].hour_categories);
 keys.forEach(key => {
@@ -34,6 +35,11 @@ keys.forEach(key => {
     cols.push(key.replace('_', ' ').toUpperCase());
     dynamicColumns.push(key);
   }
+});
+
+//Give columns width
+const newCols = cols.map(col => {
+  return { title: col, width: { wpx: 100 } };
 });
 
 const exDate = certificates[0].date;
@@ -54,19 +60,29 @@ const totalCPEReq = [];
 
 //Create Excel Data
 
-const rowOne = [[exDate, exTitle, exSponsor, exDelMeth, generalHours]];
+const rowOne = [
+  [
+    { value: exDate, style: { font: { sz: '24', bold: true } } },
+    exTitle,
+    exSponsor,
+    exDelMeth,
+    generalHours
+  ]
+];
 catHours.forEach(cat => {
   rowOne[0].push(cat);
 });
 
 const rowDataSet = [
   {
-    columns: cols,
+    columns: newCols,
     data: rowOne
   }
 ];
 
-console.log(rowDataSet);
+console.log(cols);
+console.log(newCols);
+console.log(rowOne);
 
 class Download extends React.Component {
   render() {
