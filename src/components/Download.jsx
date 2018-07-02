@@ -8,36 +8,7 @@ const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelColumn;
 
-const multiDataSet = [
-  {
-    name: 'Johson',
-    amount: 30000,
-    sex: 'M',
-    is_married: true
-  },
-  {
-    name: 'Monika',
-    amount: 355000,
-    sex: 'F',
-    is_married: false
-  },
-  {
-    name: 'John',
-    amount: 250000,
-    sex: 'M',
-    is_married: false
-  },
-  {
-    name: 'Josef',
-    amount: 450500,
-    sex: 'M',
-    is_married: true
-  }
-];
-
-const cert = certificates;
-
-//Header
+//Header Info
 
 const cycleYears = regulators[0].cycleYears;
 const name = profile.first + ' ' + profile.last;
@@ -53,19 +24,49 @@ const cycleStart = `${twoYearsPrior.getMonth() +
 const reportingPeriod = `${cycleStart} - ${cycleEnd}`;
 const cycleTotal = reportingPeriod;
 
-//Body
+//Table Body
 
-const columns = ['DATE', 'TITLE', 'SPONSOR', 'DELIVERY METHOD'];
+const cols = ['DATE', 'TITLE', 'SPONSOR', 'DELIVERY METHOD', 'GENERAL'];
+const dynamicColumns = [];
 const keys = Object.keys(regulators[0].hour_categories);
 keys.forEach(key => {
-  columns.push(key.replace('_', ' ').toUpperCase());
+  if (key !== 'hours') {
+    cols.push(key.replace('_', ' ').toUpperCase());
+    dynamicColumns.push(key);
+  }
 });
+
 const exDate = certificates[0].date;
 const exTitle = certificates[0].cert;
 const exDelMeth = certificates[0].delivery;
 const exSponsor = certificates[0].sponsor || certificates.sponsors.name;
-const catHours = certificates[0].hours[0].credits;
-//Get hours from regulators not from certificates
+const generalHours = regulators[0].hour_categories['hours'].cycle.actual;
+const catHours = [];
+dynamicColumns.forEach(cat => {
+  catHours.push(regulators[0].hour_categories[cat].cycle.actual);
+});
+
+//Summary
+
+const totalCreditsEarned = [];
+const totalCreditsApplied = [];
+const totalCPEReq = [];
+
+//Create Excel Data
+
+const rowOne = [[exDate, exTitle, exSponsor, exDelMeth, generalHours]];
+catHours.forEach(cat => {
+  rowOne[0].push(cat);
+});
+
+const rowDataSet = [
+  {
+    columns: cols,
+    data: rowOne
+  }
+];
+
+console.log(rowDataSet);
 
 class Download extends React.Component {
   render() {
@@ -88,7 +89,7 @@ class Download extends React.Component {
           </ul>
           <h6>Body Table:</h6>
           <ul>
-            <li>Hour Categories: {columns.join(' ')}</li>
+            <li>Hour Categories: {cols.join(' ')}</li>
             <li>Example Date: {exDate}</li>
             <li>Example Title: {exTitle}</li>
             <li>Example Sponsor: {exSponsor}</li>
@@ -97,15 +98,7 @@ class Download extends React.Component {
           </ul>
         </div>
         <ExcelFile>
-          <ExcelSheet data={multiDataSet} name="Placeholder">
-            <ExcelColumn label="Name" value="name" />
-            <ExcelColumn label="Wallet Money" value="amount" />
-            <ExcelColumn label="Gender" value="sex" />
-            <ExcelColumn
-              label="Marital Status"
-              value={col => (col.is_married ? 'Married' : 'Single')}
-            />
-          </ExcelSheet>
+          <ExcelSheet dataSet={rowDataSet} name="Compliance Report" />
         </ExcelFile>
       </div>
     );
