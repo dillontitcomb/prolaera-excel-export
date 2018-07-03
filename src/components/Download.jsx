@@ -6,7 +6,6 @@ import regulators from '../json/regulators.json';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelColumn;
 
 //Header Info
 
@@ -19,10 +18,35 @@ const twoYearsPrior = new Date(date.getTime() - 31556952000 * cycleYears);
 
 const cycleEnd = `${date.getMonth() +
   1}/${date.getDate()}/${date.getFullYear()}`;
+const issueDate = cycleEnd;
 const cycleStart = `${twoYearsPrior.getMonth() +
   1}/${twoYearsPrior.getDate()}/${twoYearsPrior.getFullYear()}`;
 const reportingPeriod = `${cycleStart} - ${cycleEnd}`;
 const cycleTotal = reportingPeriod;
+
+const headerCols = [
+  { title: '', width: { wpx: 200 } },
+  { title: '', width: { wpx: 200 } },
+  { title: '', width: { wpx: 200 } },
+  { title: '', width: { wpx: 200 } },
+  { title: '', width: { wpx: 200 } }
+];
+const headerRows = [];
+headerRows.push([
+  {
+    value: regName,
+    style: {
+      font: { sz: '40', bold: true },
+      alignment: { wrapText: true },
+      fill: { patternType: 'none' }
+    }
+  },
+  ' ',
+  licenseNum,
+  ' ',
+  ' '
+]);
+headerRows.push([name, ' ', issueDate, ' ', ' ']);
 
 //Table Body
 
@@ -39,7 +63,7 @@ keys.forEach(key => {
 
 //Give columns width
 const newCols = cols.map(col => {
-  return { title: col, width: { wpx: 100 } };
+  return { title: col, width: { wpx: 200 } };
 });
 
 const exDate = certificates[0].date;
@@ -75,12 +99,17 @@ catHours.forEach(cat => {
 
 const rowDataSet = [
   {
+    columns: headerCols,
+    data: headerRows
+  },
+  {
     columns: newCols,
     data: rowOne
   }
 ];
 
-console.log(cols);
+console.log(headerCols);
+console.log(headerRows);
 console.log(newCols);
 console.log(rowOne);
 
